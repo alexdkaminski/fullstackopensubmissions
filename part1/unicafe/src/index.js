@@ -11,7 +11,9 @@ const Button = (props) => {
 
 const Statistic = (props) => {
   return (
-    <p>{props.text} {props.value}</p>
+    <tr>
+      <td>{props.text} {props.value}</td>
+    </tr>
   )
 }
 
@@ -20,15 +22,19 @@ const Statistics = (props) => {
     return (
       <>
         <h2>Statistics</h2>
-        {
-          props.statistics.map((statistic, i) => {
-              return (
-              <Statistic
-                key={i}
-                text={statistic.name}
-                value={statistic.value}
-              />)
-        })}
+        <table>
+          <tbody>
+            {
+            props.statistics.map((statistic, i) => {
+                return (
+                <Statistic
+                  key={i}
+                  text={statistic.name}
+                  value={statistic.value}
+                />)
+            })}
+          </tbody>
+        </table>
       </>
     )
   } else {
