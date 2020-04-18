@@ -11,7 +11,24 @@ const Button = (props) => {
 
 const Statistic = (props) => {
   return (
-    <p>{props.text} {props.statistic}</p>
+    <p>{props.text} {props.value}</p>
+  )
+}
+
+const Statistics = (props) => {
+  return (
+    <>
+      <h2>Statistics</h2>
+      {
+      props.statistics.map((statistic, i) => {
+          return (
+          <Statistic
+            key={i}
+            text={statistic.name}
+            value={statistic.value}
+          />)
+      })}
+    </>
   )
 }
 
@@ -35,6 +52,8 @@ const App = () => {
     setAll(all.concat(-1))
     setBad(bad + 1)
   }
+
+  const getAll = () => all.length
 
   const getAverage = () => {
     let total = 0;
@@ -77,30 +96,35 @@ const App = () => {
         handleClick={badClick}
         text='Bad'
       />
-      <h2>Statistics</h2>
-      <Statistic
-        text='Good'
-        statistic={good}
-      />
-      <Statistic
-        text='Neutral'
-        statistic={neutral}
-      />
-      <Statistic
-        text='Bad'
-        statistic={bad}
-      />
-      <Statistic
-        text='All'
-        statistic={all.length}
-      />
-      <Statistic
-        text='Average'
-        statistic={getAverage()}
-      />
-      <Statistic
-        text='Positive'
-        statistic={getPositive()}
+      <Statistics
+        statistics={
+          [
+            {
+              name: 'Good',
+              value: good
+            },
+            {
+              name: 'Neutral',
+              value: neutral
+            },
+            {
+              name: 'Bad',
+              value: bad
+            },
+            {
+              name: 'All',
+              value: getAll()
+            },
+            {
+              name: 'Average',
+              value: getAverage()
+            },
+            {
+              name: 'Positive',
+              value: getPositive()
+            },
+          ]
+        }
       />
     </div>
   )
