@@ -16,20 +16,29 @@ const Statistic = (props) => {
 }
 
 const Statistics = (props) => {
-  return (
-    <>
-      <h2>Statistics</h2>
-      {
-      props.statistics.map((statistic, i) => {
-          return (
-          <Statistic
-            key={i}
-            text={statistic.name}
-            value={statistic.value}
-          />)
-      })}
-    </>
-  )
+  if (props.feedbackGiven) {
+    return (
+      <>
+        <h2>Statistics</h2>
+        {
+          props.statistics.map((statistic, i) => {
+              return (
+              <Statistic
+                key={i}
+                text={statistic.name}
+                value={statistic.value}
+              />)
+        })}
+      </>
+    )
+  } else {
+    return (
+      <>
+        <h2>Statistics</h2>
+        <p>No feedback given</p>
+      </>
+    )
+  }
 }
 
 const App = () => {
@@ -38,17 +47,27 @@ const App = () => {
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
   const [all, setAll] = useState([])
+  const [feedbackGiven, setFeedback] = useState(false)
+
+  const giveFeedback = () => {
+    if (feedbackGiven === false) {
+      setFeedback(true);
+    }
+  }
 
   const goodClick = () => {
+    giveFeedback()
     setAll(all.concat(1))
     setGood(good + 1)
   }
   const neutralClick = () => {
+    giveFeedback()
     setAll(all.concat(0))
     setNeutral(neutral + 1)
   }
 
   const badClick = () => {
+    giveFeedback()
     setAll(all.concat(-1))
     setBad(bad + 1)
   }
@@ -125,6 +144,7 @@ const App = () => {
             },
           ]
         }
+        feedbackGiven={feedbackGiven}
       />
     </div>
   )
