@@ -1,24 +1,14 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
+      "name": "Michael Rooney",
+      "number": "12345678",
+      "id": "b62f9e9b-6530-8bfd-8c56-d93b02d9cad8"
     },
     {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": 2
-    },
-    {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": 3
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
+      "name": "Alex Kaminski",
+      "number": "56781234",
+      "id": "2983eebd-70ee-4350-e985-99d08c0ad0d9"
     }
   ]
 }
