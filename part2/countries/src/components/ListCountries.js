@@ -2,13 +2,7 @@ import React, {useState} from 'react';
 import Weather from './Weather'
 import { render } from '@testing-library/react';
 
-const ListCountries = ( {filteredCountries, filter}) => {
-  const [showSingleCountry, setShowSingleCountry] = useState(false)
-  const checkShowSingleCountry = () => {
-  if (filteredCountries.length === 1) {
-    setShowSingleCountry(true)
-  }
-  }
+const ListCountries = ( {filteredCountries}) => {
 
   if (filteredCountries.length > 10 ) {
     return(
@@ -38,7 +32,7 @@ const ListCountries = ( {filteredCountries, filter}) => {
           </ul>
           <img src={country.flag} alt={`${country.name} flag`} width="200px"/>
           <h4>Weather in {country.name}</h4>
-          <Weather capital={country.capital} showSingleCountry={showSingleCountry}/>
+          <Weather capital={country.capital}/>
         </div>
         )}
       </>
