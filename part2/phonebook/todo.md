@@ -1,0 +1,2 @@
+- [x] add new person to backend
+- [ ] add person services

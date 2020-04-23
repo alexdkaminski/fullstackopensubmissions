@@ -1,9 +1,10 @@
 import React from 'react'
+import DeleteButton from './DeleteButton'
 
-const Person = ( {person} ) => {
+const Person = ( {person, handleDelete} ) => {
   return (
     <li>
-      {person.name} {person.phone}
+      {person.name} {person.number} <DeleteButton id={person.id} handleDelete={handleDelete}/>
     </li>
   )
 }
