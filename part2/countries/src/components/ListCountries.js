@@ -1,8 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
+import Weather from './Weather'
+import { render } from '@testing-library/react';
 
 const ListCountries = ( {filteredCountries, filter}) => {
-  console.log(filteredCountries)
-  console.log(filteredCountries.length)
+  const [showSingleCountry, setShowSingleCountry] = useState(false)
+  const checkShowSingleCountry = () => {
+  if (filteredCountries.length === 1) {
+    setShowSingleCountry(true)
+  }
+  }
+
   if (filteredCountries.length > 10 ) {
     return(
     <p>Too many matches, specify another filter</p>
@@ -15,7 +22,7 @@ const ListCountries = ( {filteredCountries, filter}) => {
       )}
       </ul>
     )
-  } else {
+  } else if (filteredCountries.length === 1) {
     return(
       <>
         {filteredCountries.map(country =>
@@ -29,9 +36,16 @@ const ListCountries = ( {filteredCountries, filter}) => {
             <li key={language.iso639_1}>{language.name}</li>
           )}
           </ul>
-          <img src={country.flag} width="200px"/>
+          <img src={country.flag} alt={`${country.name} flag`} width="200px"/>
+          <h4>Weather in {country.name}</h4>
+          <Weather capital={country.capital} showSingleCountry={showSingleCountry}/>
         </div>
         )}
+      </>
+    )
+  } else {
+    return(
+      <>
       </>
     )
   }
