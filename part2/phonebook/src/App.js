@@ -4,7 +4,6 @@ import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import Notification from './components/Notification'
 import personService from './services/person'
-import guidGenerator from './utils/guidGenerator'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
@@ -25,11 +24,9 @@ const App = () => {
 
   const addPerson = (e) => {
     e.preventDefault()
-    let guid = guidGenerator()
     const personObj = {
       name: newName,
       number: newNumber,
-      id: guid
     }
     // Check if persons name is already added to db
     if (!persons.some(person => person.name === newName)) {
@@ -110,7 +107,7 @@ const App = () => {
     }
   }
 
-  const peopleToShow = search === ''
+  const showPersons = search === ''
     ? persons
     : persons.filter(person => person.name.toLowerCase().includes(search.toLowerCase()))
 
@@ -122,7 +119,7 @@ const App = () => {
       <h3>Add a new person</h3>
       <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
       <h3>Numbers</h3>
-      <Persons peopleToShow={peopleToShow} handleDelete={handleDelete}/>
+      <Persons showPersons={showPersons} handleDelete={handleDelete}/>
     </div>
   )
 }
