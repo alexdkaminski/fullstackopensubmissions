@@ -30,7 +30,6 @@ const App = () => {
     }
     // Check if persons name is already added to db
     if (!persons.some(person => person.name === newName)) {
-      console.log(personObj);
       personService
         // Add person to db
         .createPerson(personObj)
@@ -40,11 +39,16 @@ const App = () => {
           setSuccessMessage(`Added ${personObj.name}`)
           setTimeout(() => {
             setSuccessMessage(null)
-          }, 5000);
+          }, 5000)
           setNewName('')
           setNewNumber('')
         })
-        .catch(err => console.log(`an error occured: ${err}`))
+        .catch(error => {
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
     } else {
       let person = persons.find(person => person.name === newName)
       updatePerson(person)
@@ -65,8 +69,8 @@ const App = () => {
           setNewName('')
           setNewNumber('')
           setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000);
+            setSuccessMessage(null)
+          }, 5000)
         })
         .catch(err => {
           setErrorMessage(`Information of ${name} has already been removed from server`)
@@ -75,8 +79,8 @@ const App = () => {
           setNewName('')
           setNewNumber('')
           setTimeout(() => {
-            setSuccessMessage(null)
-          }, 5000);
+            setErrorMessage(null)
+          }, 5000)
 
         })
     }
@@ -99,11 +103,11 @@ const App = () => {
     let person = persons.filter(person => person.id === id)[0]
     if (window.confirm(`Are you sure you want to delete ${person.name}?`)) {
       personService
-      .deletePerson(id)
-      .then (response => {
-        setPersons(persons.filter(person => person.id !== id))
-      })
-      .catch(err => console.log(`an error occured: ${err}`))
+        .deletePerson(id)
+        .then (() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(err => console.log(`an error occured: ${err}`))
     }
   }
 

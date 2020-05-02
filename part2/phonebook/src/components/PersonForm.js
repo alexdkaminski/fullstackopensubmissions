@@ -3,16 +3,16 @@ import React from 'react'
 const PersonForm = ( {addPerson, newName, handleNameChange, newNumber, handleNumberChange}) => {
   return (
     <form onSubmit={addPerson}>
-    <div>
-      name: <input value={newName} onChange={handleNameChange}/>
-    </div>
-    <div>
-      phone: <input value={newNumber} onChange={handleNumberChange}/>
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
+      <div>
+        name: <input value={newName} onChange={handleNameChange}/>
+      </div>
+      <div>
+        phone: <input value={newNumber} onChange={handleNumberChange}/>
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
   )
 }
 
