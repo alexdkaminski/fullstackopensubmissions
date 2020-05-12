@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+  "title": "A really interesting blog",
+  "author": "Katie Dangerfield",
+  "url": "https://www.blogger.com/blog",
+  "likes": 456
+}
