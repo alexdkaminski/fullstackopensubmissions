@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const Notification = ( {successMessage,errorMessage}) => {
   if (successMessage === null && errorMessage === null ) {
