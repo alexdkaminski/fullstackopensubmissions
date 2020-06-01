@@ -8,6 +8,8 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
+let token, userCreatedBlog
+
 beforeEach(async () => {
   await Blog.deleteMany({})
   const blogObjects = listHelper.initialBlogs
@@ -32,88 +34,6 @@ test('all blogs are returned', async () => {
 test('unique identifier is named id', async () => {
   const response = await api.get('/api/blogs')
   expect(response.body[0].id).toBeDefined()
-})
-
-test('a valid blog post can be added', async () => {
-  const newBlog = {
-    title: "My cool blog post",
-    author: "Alex Kaminski",
-    url: "https://alexkaminski.com.au/",
-    likes: 9
-  }
-
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-
-  const blogsAtEnd = await listHelper.blogsInDb()
-  expect(blogsAtEnd).toHaveLength(listHelper.initialBlogs.length + 1)
-
-  const title = blogsAtEnd.map(b => b.title)
-  expect(title).toContain(
-    'My cool blog post'
-  )
-})
-
-test('a blog post with no likes property defaults to a value of 0', async () => {
-  const newBlog = {
-    title: "An unliked post",
-    author: "Katie Dangerfield",
-    url: "https://katiedangerfield.com.au/"
-  }
-
-  const response =  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-
-  expect(response.body.likes).toBe(0)
-})
-
-test('a blog post without a title and url is rejected', async () => {
-  const newBlog = {
-    author: "Alex Kaminski",
-    likes: 3
-  }
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(400)
-})
-
-test('a blog can be deleted', async () => {
-  const blogsAtStart = await listHelper.blogsInDb()
-  const blogToDelete = blogsAtStart[0]
-
-  await api
-    .delete(`/api/blogs/${blogToDelete.id}`)
-    .expect(204)
-
-  const blogsAtEnd = await listHelper.blogsInDb()
-
-  expect(blogsAtEnd.length).toBe(
-    listHelper.initialBlogs.length - 1
-  )
-
-  const title = blogsAtEnd.map(b => b.title)
-
-  expect(title).not.toContain(blogToDelete.title)
-})
-
-test('a blog can be updated', async () => {
-  const blogsAtStart = await listHelper.blogsInDb()
-  const blogToUpdate = blogsAtStart[0]
-  blogToUpdate.likes = 13
-
-  const response = await api
-    .put(`/api/blogs/${blogToUpdate.id}`)
-    .send(blogToUpdate)
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-  expect(response.body.likes).toBe(13)
 })
 
 describe('when there is initially one user in db', () => {
@@ -249,6 +169,122 @@ describe('when there is initially one user in db', () => {
 
     const usersAtEnd = await listHelper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
+
+  describe('when the user has logged in', () => {
+    beforeEach(async () => {
+      const userLogin = {
+        username: 'root',
+        password: 'sekret'
+      }
+      const response = await api
+        .post('/api/login')
+        .send(userLogin)
+      token = response.body.token
+    })
+
+    test('a valid blog post can be added', async () => {
+      const newBlog = {
+        title: "My cool blog post",
+        author: "Alex Kaminski",
+        url: "https://alexkaminski.com.au/",
+        likes: 9
+      }
+
+      await api
+        .post('/api/blogs')
+        .set('Authorization', `bearer ${token}`)
+        .send(newBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      const blogsAtEnd = await listHelper.blogsInDb()
+      expect(blogsAtEnd).toHaveLength(listHelper.initialBlogs.length + 1)
+
+      const title = blogsAtEnd.map(b => b.title)
+      expect(title).toContain(
+        'My cool blog post'
+      )
+    })
+
+    test('a blog post with no likes property defaults to a value of 0', async () => {
+      const newBlog = {
+        title: "An unliked post",
+        author: "Katie Dangerfield",
+        url: "https://katiedangerfield.com.au/"
+      }
+
+      const response =  await api
+        .post('/api/blogs')
+        .set('Authorization', `bearer ${token}`)
+        .send(newBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      expect(response.body.likes).toBe(0)
+    })
+
+    test('a blog post without a title and url is rejected', async () => {
+      const newBlog = {
+        author: "Alex Kaminski",
+        likes: 3
+      }
+      await api
+        .post('/api/blogs')
+        .set('Authorization', `bearer ${token}`)
+        .send(newBlog)
+        .expect(400)
+    })
+
+    describe('when the logged in user has created a note', () => {
+      beforeEach(async () => {
+        const newBlog = {
+          title: "My cool blog post",
+          author: "Alex Kaminski",
+          url: "https://alexkaminski.com.au/",
+          likes: 9
+        }
+
+        const response = await api
+          .post('/api/blogs')
+          .set('Authorization', `bearer ${token}`)
+          .send(newBlog)
+          userCreatedBlog = response.body
+      })
+      test('the blog can be deleted', async () => {
+        let blogsAtStart = await listHelper.blogsInDb()
+        let blogToDelete = userCreatedBlog
+
+        await api
+          .delete(`/api/blogs/${userCreatedBlog.id}`)
+          .set('Authorization', `bearer ${token}`)
+          .expect(204)
+
+        const blogsAtEnd = await listHelper.blogsInDb()
+
+        expect(blogsAtEnd.length).toBe(
+          blogsAtStart.length - 1
+        )
+
+        const title = blogsAtEnd.map(b => b.title)
+
+        expect(title).not.toContain(blogToDelete.title)
+      })
+
+      test('the blog can be updated', async () => {
+        const blogsAtStart = await listHelper.blogsInDb()
+        const blogToUpdate = blogsAtStart[0]
+        blogToUpdate.likes = 13
+
+        const response = await api
+          .put(`/api/blogs/${blogToUpdate.id}`)
+          .set('Authorization', `bearer ${token}`)
+          .send(blogToUpdate)
+          .expect(200)
+          .expect('Content-Type', /application\/json/)
+        expect(response.body.likes).toBe(13)
+      })
+    })
   })
 })
 afterAll(() => {
