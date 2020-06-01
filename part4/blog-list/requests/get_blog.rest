@@ -1,0 +1,1 @@
+GET http://localhost:3001/api/blogs/5ecef44d27169e0700f8ba0c
