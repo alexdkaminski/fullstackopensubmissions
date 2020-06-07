@@ -11,12 +11,7 @@ import './App.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [ errorMessage, setErrorMessage ] = useState(null)
   const [ successMessage, setSuccessMessage ] = useState(null)
   const blogFormRef = React.createRef()
@@ -24,9 +19,9 @@ const App = () => {
   useEffect(() => {
     blogService
       .getAll()
-        .then(blogs =>
-          setBlogs( blogs )
-    )
+      .then(blogs =>
+        setBlogs( sortByLikes(blogs) )
+      )
   }, [])
 
   useEffect(() => {
@@ -38,23 +33,20 @@ const App = () => {
     }
   }, [])
 
-  const addBlog = (event) => {
-    event.preventDefault()
-    blogFormRef.current.toggleVisibility()
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url,
-    }
+  const sortByLikes = (blogs) => {
+    const sorted = blogs.sort((a,b) => {
+      return b.likes - a.likes
+    })
+    return sorted
+  }
 
+  const createBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         setSuccessMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
-        setTitle('')
-        setAuthor('')
-        setUrl('')
         setTimeout(() => {
           setSuccessMessage(null)
         }, 5000)
@@ -67,8 +59,47 @@ const App = () => {
       })
   }
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const updateBlog = async (id, blogObject, blogUser) => {
+    try {
+      console.log('blogUser: ',blogUser)
+      const returnedBlog = await blogService.update(id, blogObject)
+      returnedBlog.user = blogUser
+      console.log('returnedBlog: ',returnedBlog)
+      let updatedBlogs = blogs.map(blog => blog.id !== id ? blog : returnedBlog)
+      let sortedBlogs = sortByLikes(updatedBlogs)
+      setBlogs(sortedBlogs)
+    } catch (error) {
+      setErrorMessage(
+        `Blog '${blogObject.title}' was already removed from server`
+      )
+      console.log(error)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
+  const deleteBlog = async (id) => {
+    let blog = blogs.filter(blog => blog.id === id)[0]
+    if (window.confirm(`Delete blog ${blog.title} by ${blog.author}?`)) {
+      try {
+        await blogService.deleteBlog(id)
+        let updatedBlogs = blogs.filter(blog => blog.id !== id)
+        let sortedBlogs = sortByLikes(updatedBlogs)
+        setBlogs(sortedBlogs)
+      } catch (error) {
+        setErrorMessage(
+          `An error occured: ${error}`
+        )
+        console.log(error)
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
+    }
+  }
+
+  const handleLogin = async (username, password) => {
     // Try to login user and set user state
     try {
       // Login
@@ -84,17 +115,15 @@ const App = () => {
       // Set user state
       setUser(user)
       // Clear username and password
-      setUsername('')
-      setPassword('')
     } catch (error) {
-        setErrorMessage(error.response.data.error)
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
+      setErrorMessage(error.response.data.error)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
-  const handleLogout = async (event) => {
+  const handleLogout = async () => {
     // Set user state to null
     setUser(null)
     // Remove user from local storage
@@ -103,44 +132,33 @@ const App = () => {
 
   return (
     <div>
-    {user === null ?
-      <div>
-        <h2>Login</h2>
-        <Notification errorMessage={errorMessage} successMessage={successMessage}/>
-        <Togglable buttonLabel='login'>
-          <LoginForm
-              handleSubmit={handleLogin}
-              username={username}
-              password={password}
-              handleUsernameChange={({ target }) => setUsername(target.value)}
-              handlePasswordChange={({ target }) => setPassword(target.value)}
-            />
-        </Togglable>
-      </div>
-    :
-      <div>
-        <h2>Blogs</h2>
-        <Notification errorMessage={errorMessage} successMessage={successMessage}/>
+      {user === null ?
         <div>
-          <p>{user.name} logged in</p>
-          <button onClick={handleLogout}>logout</button>
+          <h2>Login</h2>
+          <Notification errorMessage={errorMessage} successMessage={successMessage}/>
+          <Togglable buttonLabel='login' hideLabel='cancel'>
+            <LoginForm
+              handleLogin={handleLogin}
+            />
+          </Togglable>
+        </div>:
+        <div>
+          <h2>Blogs</h2>
+          <Notification errorMessage={errorMessage} successMessage={successMessage}/>
+          <div>
+            <p>{user.name} logged in</p>
+            <button onClick={handleLogout}>logout</button>
+          </div>
+          <Togglable buttonLabel='new blog' hideLabel='cancel' ref={blogFormRef}>
+            <BlogForm
+              createBlog={createBlog}
+            />
+          </Togglable>
+          {blogs.map(blog =>
+            <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} user={user}/>
+          )}
         </div>
-        <Togglable buttonLabel="new blog" ref={blogFormRef}>
-          <BlogForm
-            addBlog={addBlog}
-            title={title}
-            author={author}
-            url={url}
-            handleTitleChange={({ target }) => setTitle(target.value)}
-            handleAuthorChange={({ target }) => setAuthor(target.value)}
-            handleUrlChange={({ target }) => setUrl(target.value)}
-          />
-        </Togglable>
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
-      </div>
-    }
+      }
     </div>
   )
 }

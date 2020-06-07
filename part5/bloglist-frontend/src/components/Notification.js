@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Notification = ( {successMessage, errorMessage}) => {
+const Notification = ( { successMessage, errorMessage }) => {
   if (successMessage === null && errorMessage === null ) {
     return null
   }
