@@ -40,9 +40,9 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
       <div>
         {blog.title} {blog.author}
         <Toggleable buttonLabel='view' hideLabel='hide'>
-          <div>{blog.url}</div>
-          <div>{`likes ${blog.likes}`}<LikeButton addLike={addLike}/></div>
-          <div>{blog.author}</div>
+          <div className="blogUrl">{blog.url}</div>
+          <div className="blogLikes">{`likes ${blog.likes}`}<LikeButton addLike={addLike}/></div>
+          <div className="blogAuthor">{blog.author}</div>
           {blog.user.username === user.username &&
             <div><DeleteButton deleteClick={deleteClick}/></div>
           }
