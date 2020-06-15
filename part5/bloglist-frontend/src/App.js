@@ -45,7 +45,10 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
+        returnedBlog.user = user
+        let blogList = blogs.concat(returnedBlog)
+        let sortedBlogs = sortByLikes(blogList)
+        setBlogs(sortedBlogs)
         setSuccessMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
         setTimeout(() => {
           setSuccessMessage(null)
@@ -59,11 +62,10 @@ const App = () => {
       })
   }
 
-  const updateBlog = async (id, blogObject, blogUser) => {
+  const updateBlog = async (id, blogObject) => {
     try {
-      console.log('blogUser: ',blogUser)
       const returnedBlog = await blogService.update(id, blogObject)
-      returnedBlog.user = blogUser
+      returnedBlog.user = user
       console.log('returnedBlog: ',returnedBlog)
       let updatedBlogs = blogs.map(blog => blog.id !== id ? blog : returnedBlog)
       let sortedBlogs = sortByLikes(updatedBlogs)
@@ -116,7 +118,7 @@ const App = () => {
       setUser(user)
       // Clear username and password
     } catch (error) {
-      setErrorMessage(error.response.data.error)
+      setErrorMessage('Wrong credentials')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -136,11 +138,9 @@ const App = () => {
         <div>
           <h2>Login</h2>
           <Notification errorMessage={errorMessage} successMessage={successMessage}/>
-          <Togglable buttonLabel='login' hideLabel='cancel'>
-            <LoginForm
-              handleLogin={handleLogin}
-            />
-          </Togglable>
+          <LoginForm
+            handleLogin={handleLogin}
+          />
         </div>:
         <div>
           <h2>Blogs</h2>

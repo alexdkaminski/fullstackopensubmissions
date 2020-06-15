@@ -20,7 +20,7 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
     blogObject.title = blog.title
     blogObject.url = blog.url
     blogObject.likes = blog.likes + 1
-    updateBlog(blog.id, blogObject, blog.user)
+    updateBlog(blog.id, blogObject)
   }
 
   const deleteClick = () => {
@@ -36,12 +36,12 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div>
         {blog.title} {blog.author}
         <Toggleable buttonLabel='view' hideLabel='hide'>
           <div className="blogUrl">{blog.url}</div>
-          <div className="blogLikes">{`likes ${blog.likes}`}<LikeButton addLike={addLike}/></div>
+          <div>likes <span className="blogLikes">{blog.likes}</span><LikeButton addLike={addLike}/></div>
           <div className="blogAuthor">{blog.author}</div>
           {blog.user.username === user.username &&
             <div><DeleteButton deleteClick={deleteClick}/></div>
