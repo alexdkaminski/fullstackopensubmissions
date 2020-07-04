@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsZXhrYW1pbnNraSIsImlkIjoiNWVjZWRhMzgzMmJmNTE1NjM4MmEzNmMwIiwiaWF0IjoxNTkwNjIwNzQxfQ.zXE_IL3fpaq9MA39sSP-B-oGGEHezM1gkHyu80WCM5Y
+
+{
+  "title": "The blog to end all blogs",
+  "author": "Alex Kaminski",
+  "url": "https://www.blogger.com/latest-blog",
+  "likes": 789
+}
