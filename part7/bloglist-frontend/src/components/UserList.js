@@ -5,14 +5,14 @@ import { connect } from 'react-redux'
 const User = ({ user }) => {
   const blogsCreated = user.blogs.length
   return (
-    <div>
-      <div>
+    <tr>
+      <td>
         {user.name}
-      </div>
-      <div>
+      </td>
+      <td>
         {blogsCreated}
-      </div>
-    </div>
+      </td>
+    </tr>
   )
 }
 
@@ -21,12 +21,20 @@ const UserList = (props) => {
   return (
     <div>
       <h2>Users</h2>
-      {props.users.map(user =>
-        <User
-          key={user.id}
-          user={user}
-        />
-      )}
+      <table>
+        <th>
+          
+        </th>
+        <th>
+          Blogs created
+        </th>
+          {props.users.map(user =>
+            <User
+              key={user.id}
+              user={user}
+            />
+          )}
+      </table>
     </div>
   )
 }
