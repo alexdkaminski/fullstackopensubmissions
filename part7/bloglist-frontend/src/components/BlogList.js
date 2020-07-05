@@ -1,8 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import Toggleable from './Togglable'
 import LikeButton from './LikeButton'
-import DeleteButton from './DeleteButton'
 import { likeBlog, deleteBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
@@ -19,16 +19,8 @@ const Blog = ({ blog, user, addLike, deleteBlog }) => {
   return(
     <div className="blog" style={blogStyle}>
       <div>
-        {blog.title} {blog.author}
-        <Toggleable buttonLabel='view' hideLabel='hide'>
-          <div className="blogUrl">{blog.url}</div>
-          <div>likes <span className="blogLikes">{blog.likes}</span>
-            <LikeButton addLike={addLike}/>
-          </div>
-          <div className="blogAuthor">{blog.author}</div>
-          {blog.user.username === user.username &&
-            <div><DeleteButton deleteClick={deleteBlog}/></div>}
-        </Toggleable>
+        <div><Link to={`/blogs/${blog.id}`}>{blog.title}</Link></div>
+        <div>{blog.author}</div>
       </div>
     </div>
   )
@@ -42,16 +34,6 @@ const BlogList = (props) => {
         <Blog
           key={blog.id}
           blog={blog}
-          user={props.user}
-          addLike={() => {
-            console.log('clicked like button')
-            props.likeBlog(blog.id)
-            props.setNotification(`You liked '${blog.title}'`, 5)
-          }}
-          deleteBlog={() => {
-            console.log('clicked delete button')
-            props.deleteBlog(blog.id)
-          }}
         />
       )}
     </div>

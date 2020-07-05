@@ -11,6 +11,8 @@ import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import BlogList from './components/BlogList'
 import UserList from './components/UserList'
+import Blog from './components/Blog'
+import User from './components/User'
 import storage from './utils/storage'
 
 import { initializeBlogs } from './reducers/blogReducer'
@@ -34,8 +36,7 @@ const App = (props) => {
     // Remove user from local storage
     storage.logoutUser()
   }
-  console.log('user state:')
-  console.log(props.user)
+
   return (
     <div>
       <Switch>
@@ -45,6 +46,12 @@ const App = (props) => {
             <Notification/>
             <LoginForm/>
           </div>
+        </Route>
+        <Route path="/blogs/:id">
+          <Blog/>
+        </Route>
+        <Route path="/users/:id">
+          <User/>
         </Route>
         <Route path="/users">
           <UserList/>
@@ -70,7 +77,8 @@ const App = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user
+    user: state.user,
+    users: state.users
   }
 }
 

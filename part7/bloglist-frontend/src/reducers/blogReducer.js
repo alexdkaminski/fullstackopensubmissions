@@ -26,9 +26,7 @@ export const likeBlog = (id) => {
       ...blogToChange,
       likes: blogToChange.likes + 1
     }
-    console.log(changedBlog)
     const updatedBlog = await blogService.update(changedBlog)
-    console.log(updatedBlog)
     dispatch ({
       type: 'LIKE_BLOG',
       data: {

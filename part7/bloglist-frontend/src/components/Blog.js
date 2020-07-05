@@ -1,55 +1,51 @@
 import React from 'react'
-import Toggleable from './Togglable'
-import LikeButton from './LikeButton'
-import DeleteButton from './DeleteButton'
-import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { useRouteMatch } from 'react-router'
+import LikeButton from '../components/LikeButton'
+import DeleteButton from '../components/DeleteButton'
+import { likeBlog, deleteBlog } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
-const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
 
-  const addLike = () => {
-    let blogObject = {}
-    blogObject.user = blog.user.id
-    blogObject.author = blog.author
-    blogObject.title = blog.title
-    blogObject.url = blog.url
-    blogObject.likes = blog.likes + 1
-    updateBlog(blog.id, blogObject)
-  }
+const Blog = ({ blogs, user, likeBlog, deleteBlog }) => {
+  const blogMatch = useRouteMatch('/blogs/:id')
+  const blog = blogMatch ? blogs.find(b => b.id === blogMatch.params.id) : null
 
-  const deleteClick = () => {
-    console.log('delete click')
-    deleteBlog(blog.id)
-  }
-
-  Blog.propTypes = {
-    blog: PropTypes.object.isRequired,
-    user: PropTypes.object.isRequired,
-    updateBlog: PropTypes.func.isRequired,
-    deleteBlog: PropTypes.func.isRequired,
+  if (!blog) {
+    return null
   }
 
   return (
-    <div className="blog" style={blogStyle}>
-      <div>
-        {blog.title} {blog.author}
-        <Toggleable buttonLabel='view' hideLabel='hide'>
-          <div className="blogUrl">{blog.url}</div>
-          <div>likes <span className="blogLikes">{blog.likes}</span><LikeButton addLike={addLike}/></div>
-          <div className="blogAuthor">{blog.author}</div>
-          {blog.user.username === user.username &&
-            <div><DeleteButton deleteClick={deleteClick}/></div>
-          }
-        </Toggleable>
+    <div>
+      <h3>{blog.title}</h3>
+      <a href={blog.url}>{blog.url}</a>
+      <div>likes <span className="blogLikes">{blog.likes}</span>
+        <LikeButton 
+          addLike={() => {
+            console.log('clicked like button')
+            likeBlog(blog.id)
+            setNotification(`You liked '${blog.title}'`, 5)
+          }}
+        />
+        {blog.user.username === user.username &&
+          <div><DeleteButton deleteClick={() => {
+            deleteBlog(blog.id)
+          }}/></div>}
       </div>
+      <p>Added by {blog.user.name}</p>
     </div>
   )
 }
 
-export default Blog
+const mapStateToProps = (state) => ({
+  blogs: state.blogs,
+  user: state.user
+})
+
+const mapDispatchToProps = {
+  likeBlog,
+  setNotification,
+  deleteBlog
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Blog)
