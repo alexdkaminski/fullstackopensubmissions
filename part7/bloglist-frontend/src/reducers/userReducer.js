@@ -1,8 +1,13 @@
 import loginService from '../services/login'
-import { setNotification } from '../reducers/notificationReducer'
+import { setNotification } from './notificationReducer'
 import storage from '../utils/storage'
 
-const reducer = (state = null, action) => {
+const initialState = () => {
+  const userExists = storage.checkUser()
+  return userExists ? storage.loadUser() : null
+}
+
+const reducer = (state = initialState(), action) => {
   switch (action.type) {
   case 'LOGIN':
     return action.data

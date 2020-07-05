@@ -9,8 +9,12 @@ const loadUser = () =>
 const logoutUser = () =>
   localStorage.removeItem(storageKey)
 
+const checkUser = () =>
+  localStorage.getItem(storageKey) ? true : false
+
 export default {
   saveUser,
   loadUser,
-  logoutUser
+  logoutUser,
+  checkUser
 }

@@ -1,16 +1,20 @@
 import React, { useState } from 'react'
 import { loginUser } from '../reducers/userReducer'
 import { connect } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 
 const LoginForm = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const history = useHistory()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    props.loginUser(username, password)
+    await props.loginUser(username, password)
     setUsername('')
     setPassword('')
+    history.push('/')
+    console.log('user logged in')
   }
 
   return (

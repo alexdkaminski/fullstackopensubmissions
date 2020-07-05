@@ -1,76 +1,32 @@
 import React, { useEffect } from 'react'
 import { useDispatch, connect } from 'react-redux'
+import {
+  Switch,
+  Route,
+  Redirect
+} from 'react-router-dom'
 
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import BlogList from './components/BlogList'
+import UserList from './components/UserList'
 import storage from './utils/storage'
 
 import { initializeBlogs } from './reducers/blogReducer'
 import { logoutUser, setUser } from './reducers/userReducer'
+import { initializeUsers } from './reducers/usersReducer'
+
 import './App.css'
 
 
 const App = (props) => {
   const dispatch = useDispatch()
-  // Destrucutre setUser so it can be used in useEffect() hook
-  const { setUser } = props
-
   useEffect(() => {
+    // Initialize blogs
     dispatch(initializeBlogs())
+    dispatch(initializeUsers())
   }, [dispatch])
-
-  useEffect(() => {
-    const user = storage.loadUser()
-    setUser(user)
-  }, [setUser])
-
-  // const sortByLikes = (blogs) => {
-  //   const sorted = blogs.sort((a,b) => {
-  //     return b.likes - a.likes
-  //   })
-  //   return sorted
-  // }
-
-  // const updateBlog = async (id, blogObject) => {
-  //   try {
-  //     const returnedBlog = await blogService.update(id, blogObject)
-  //     returnedBlog.user = user
-  //     console.log('returnedBlog: ',returnedBlog)
-  //     let updatedBlogs = blogs.map(blog => blog.id !== id ? blog : returnedBlog)
-  //     let sortedBlogs = sortByLikes(updatedBlogs)
-  //     setBlogs(sortedBlogs)
-  //   } catch (error) {
-  //     setErrorMessage(
-  //       `Blog '${blogObject.title}' was already removed from server`
-  //     )
-  //     console.log(error)
-  //     setTimeout(() => {
-  //       setErrorMessage(null)
-  //     }, 5000)
-  //   }
-  // }
-
-  // const deleteBlog = async (id) => {
-  //   let blog = blogs.filter(blog => blog.id === id)[0]
-  //   if (window.confirm(`Delete blog ${blog.title} by ${blog.author}?`)) {
-  //     try {
-  //       await blogService.deleteBlog(id)
-  //       let updatedBlogs = blogs.filter(blog => blog.id !== id)
-  //       let sortedBlogs = sortByLikes(updatedBlogs)
-  //       setBlogs(sortedBlogs)
-  //     } catch (error) {
-  //       setErrorMessage(
-  //         `An error occured: ${error}`
-  //       )
-  //       console.log(error)
-  //       setTimeout(() => {
-  //         setErrorMessage(null)
-  //       }, 5000)
-  //     }
-  //   }
-  // }
 
   const handleLogout = async () => {
     // Set user state to null
@@ -78,26 +34,36 @@ const App = (props) => {
     // Remove user from local storage
     storage.logoutUser()
   }
-
+  console.log('user state:')
+  console.log(props.user)
   return (
     <div>
-      {!props.user ?
-        <div>
-          <h2>Login</h2>
-          <Notification/>
-          <LoginForm/>
-        </div>:
-        <div>
-          <h2>Blogs</h2>
-          <Notification/>
+      <Switch>
+        <Route path="/login">
           <div>
-            <p>{props.user.name} logged in</p>
-            <button onClick={handleLogout}>logout</button>
+            <h2>Login</h2>
+            <Notification/>
+            <LoginForm/>
           </div>
-          <BlogForm/>
-          <BlogList/>
-        </div>
-      }
+        </Route>
+        <Route path="/users">
+          <UserList/>
+        </Route>
+        <Route path="/">
+          {props.user ?
+            <div>
+              <h2>Blogs</h2>
+              <Notification/>
+              <div>
+                <p>{props.user.name} logged in</p>
+                <button onClick={handleLogout}>logout</button>
+              </div>
+              <BlogForm/>
+              <BlogList/>
+            </div>
+            : <Redirect to="/login"/>}
+        </Route>
+      </Switch>
     </div>
   )
 }
