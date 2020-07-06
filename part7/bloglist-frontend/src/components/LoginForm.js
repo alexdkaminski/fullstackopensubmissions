@@ -2,6 +2,10 @@ import React, { useState } from 'react'
 import { loginUser } from '../reducers/userReducer'
 import { connect } from 'react-redux'
 import { useHistory } from 'react-router-dom'
+import {
+  TextField,
+  Button
+} from '@material-ui/core'
 
 const LoginForm = (props) => {
   const [username, setUsername] = useState('')
@@ -18,28 +22,32 @@ const LoginForm = (props) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        username
-        <input
+    <form onSubmit={handleSubmit} >
+      <div style={{ padding: '0px 20px ' }}>
+        <TextField
+          label="username"
           id="username"
           type='text'
           name='username'
           value={username}
+          fullWidth={true}
           onChange={({ target }) => setUsername(target.value)}
         />
       </div>
-      <div>
-        password
-        <input
+      <div style={{ padding: '10px 20px ' }}>
+        <TextField
+          label="password"
           id="password"
           type='password'
           name='password'
           value={password}
+          fullWidth={true}
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type='submit' id="login-button">login</button>
+      <div style={{ marginTop:20, padding: '0px 20px' }}>
+        <Button variant="contained" type='submit' id="login-button" fullWidth={true}>login</Button>
+      </div>
     </form>
   )
 }

@@ -3,6 +3,10 @@ import { connect } from 'react-redux'
 import { createBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 import Togglable from './Togglable'
+import {
+  TextField,
+  Button
+} from '@material-ui/core'
 
 
 const BlogForm = (props) => {
@@ -20,7 +24,7 @@ const BlogForm = (props) => {
       url: url,
     }
     props.createBlog(blogObject)
-    props.setNotification(`Note ${title} created`, 5, props.noteId)
+    props.setNotification(`Blog ${title} created`, 5, 'success')
     setTitle('')
     setAuthor('')
     setUrl('')
@@ -30,30 +34,33 @@ const BlogForm = (props) => {
     <Togglable buttonLabel='new blog' hideLabel='cancel' ref={blogFormRef}>
       <form onSubmit={addBlog}>
         <div>
-          title:
-          <input
+          <TextField
+            label="title"
             id='title'
             value={title}
+            required
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
         <div>
-          author:
-          <input
+          <TextField
+            label='author'
             id='author'
             value={author}
+            required
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>
-          url:
-          <input
+          <TextField
+            label='url'
             id='url'
             value={url}
+            required
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
-        <button type="submit">save</button>
+        <Button style={{margin: '20px 0px'}} variant="contained" color="primary" type="submit">save</Button>
       </form>
     </Togglable>
   )

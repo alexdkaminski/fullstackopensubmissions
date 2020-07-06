@@ -1,21 +1,13 @@
 import React from 'react'
 import { useRouteMatch } from 'react-router'
+import { Link as RouterLink } from 'react-router-dom'
 import { connect } from 'react-redux'
-import blogs from '../services/blogs'
-
-const Title = ({ user }) => {
-  return (
-    <>
-      { user ? <h3>{user.name}</h3> : ''}
-      <h4>Added blogs</h4>
-    </>
-  )
-}
+import { Typography, Container, Link } from '@material-ui/core'
 
 const UserBlog = ({ blog }) => {
   return (
     <>
-      { blog ? <li>{blog.title}</li> : ''}
+      { blog ? <li><Link color="inherit" component={RouterLink} to={`/blogs/${blog.id}`}>{blog.title}</Link></li> : ''}
     </>
   )
 }
@@ -31,8 +23,11 @@ const UserBlogList = ({ users }) => {
   }
 
   return (
-    <>
-      <Title user={user}/>
+    <Container>
+      <div style={{marginTop:40}}>
+      { user ? <Typography variant="h4" style={{marginBottom: 10}}>{user.name}</Typography> : ''}
+
+      <Typography variant="h6">Added blogs</Typography>
       <ul>
         {user.blogs.map(blog => 
           <UserBlog
@@ -41,7 +36,8 @@ const UserBlogList = ({ users }) => {
           />
         )}
       </ul>
-    </>
+      </div>
+    </Container>
   )
 }
 
@@ -50,10 +46,6 @@ const mapStateToProps = (state) => {
     users: state.users
   }
 }
-
-// const mapDispatchToProps = {
-  
-// }
 
 const ConnectedUserBlogList = connect(
   mapStateToProps,

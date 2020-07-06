@@ -3,6 +3,7 @@ export default (state = { message: '', timeoutId: null }, action) => {
   case 'SET_NOTIFICATION':
     return {
       message: action.message,
+      severity: action.severity,
       timeoutId: action.timeoutId
     }
   case 'REMOVE_NOTIFICATION':
@@ -14,13 +15,14 @@ export default (state = { message: '', timeoutId: null }, action) => {
   }
 }
 
-export const setNotification = (message, timeout) => {
+export const setNotification = (message, timeout, severity) => {
   return async (dispatch, getState) => {
     const timeoutId = getState().notification.timeoutId
     clearTimeout(timeoutId)
     dispatch({
       type: 'SET_NOTIFICATION',
       message: message,
+      severity: severity,
       timeoutId: setTimeout(() => {
         dispatch(removeNotification())
       }, timeout * 1000)

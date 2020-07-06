@@ -1,8 +1,9 @@
 import React from 'react'
+import { Button } from '@material-ui/core'
 
 const LikeButton = ( { addLike } ) => {
   return (
-    <button onClick={addLike}>Like</button>
+    <Button variant="contained" onClick={addLike} style={{ marginTop: 10, marginRight: 10 }}>Like</Button>
   )
 }
 

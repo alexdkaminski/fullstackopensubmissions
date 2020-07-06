@@ -1,13 +1,26 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import Toggleable from './Togglable'
-import LikeButton from './LikeButton'
-import { likeBlog, deleteBlog } from '../reducers/blogReducer'
-import { setNotification } from '../reducers/notificationReducer'
+import {
+  Grid,
+  Paper,
+} from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+}));
 
 // Presentational component
-const Blog = ({ blog, user, addLike, deleteBlog }) => {
+const Blog = ({ blog }) => {
+  const classes = useStyles()
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -17,26 +30,28 @@ const Blog = ({ blog, user, addLike, deleteBlog }) => {
   }
 
   return(
-    <div className="blog" style={blogStyle}>
-      <div>
-        <div><Link to={`/blogs/${blog.id}`}>{blog.title}</Link></div>
-        <div>{blog.author}</div>
-      </div>
-    </div>
+    <Grid item xs={4}>
+      <Paper className={classes.paper}>
+        <Link style={{color:'#FFF'}} color="inherit" to={`/blogs/${blog.id}`}>{blog.title}</Link><br></br>
+        {blog.author}
+      </Paper>
+    </Grid>
   )
 }
 
 // Container component
 const BlogList = (props) => {
   return (
-    <div>
+
+    <Grid container spacing={2} style={{ marginTop: 20 }}>
       {props.blogs.map(blog =>
         <Blog
           key={blog.id}
           blog={blog}
         />
       )}
-    </div>
+    </Grid>
+
   )
 }
 
@@ -54,25 +69,10 @@ const mapStateToProps = (state) => {
     blogs: sortByLikes(state.blogs),
     user: state.user
   }
-  // if (state.filter === '') {
-  //   return {
-  //     anecdotes: state.anecdotes
-  //   }
-  // }
-  // return {
-  //   anecdotes: sortByVotes(state.anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(state.filter.toLowerCase())))
-  // }
-}
-
-const mapDispatchToProps = {
-  likeBlog,
-  deleteBlog,
-  setNotification
 }
 
 const ConnectedBlogList = connect(
-  mapStateToProps,
-  mapDispatchToProps
+  mapStateToProps
 )(BlogList)
 
 export default ConnectedBlogList

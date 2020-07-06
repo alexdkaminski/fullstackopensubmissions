@@ -1,5 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Link as RouterLink } from 'react-router-dom'
+import { Typography, Container, Link } from '@material-ui/core'
 
 // Presentational component
 const User = ({ user }) => {
@@ -7,7 +9,7 @@ const User = ({ user }) => {
   return (
     <tr>
       <td>
-        {user.name}
+        <Link component={RouterLink} color="inherit" to={`/users/${user.id}`}>{user.name}</Link>
       </td>
       <td>
         {blogsCreated}
@@ -19,23 +21,30 @@ const User = ({ user }) => {
 // Container component
 const UserList = (props) => {
   return (
-    <div>
-      <h2>Users</h2>
+    <Container style={{ marginTop: 40 }}>
+      <Typography variant="h5">Users</Typography>
       <table>
-        <th>
+        <thead>
+          <tr>
+          <th>
           
-        </th>
-        <th>
-          Blogs created
-        </th>
+          </th>
+          <th>
+            Blogs created
+          </th>
+          </tr>
+
+        </thead>
+        <tbody>
           {props.users.map(user =>
             <User
               key={user.id}
               user={user}
             />
           )}
+        </tbody>
       </table>
-    </div>
+    </Container>
   )
 }
 

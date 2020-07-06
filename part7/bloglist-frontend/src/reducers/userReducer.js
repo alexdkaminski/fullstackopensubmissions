@@ -30,7 +30,7 @@ export const loginUser = (username, password) => {
       // Set local storage
       storage.saveUser(user)
       // Dispatch notification
-      dispatch(setNotification(`User ${user.name} logged in`, 5))
+      dispatch(setNotification(`User ${user.name} logged in`, 5, 'success'))
       // Dispatch login action
       dispatch({
         type: 'LOGIN',
@@ -38,16 +38,20 @@ export const loginUser = (username, password) => {
       })
     } catch (error) {
       console.log(error)
-      dispatch(setNotification(`An error has occured: ${error}`, 5))
+      dispatch(setNotification(`An error has occured: ${error}`, 5, 'error'))
     }
   }
 }
 
-export const logoutUser = () => (
-  {
-    type: 'LOGOUT',
-  }
-)
+export const logoutUser = () => {
+  // Remove user from local storage
+  storage.logoutUser()
+  return (
+    {
+      type: 'LOGOUT',
+    }
+  )
+}
 
 export const setUser = (user) => (
   {

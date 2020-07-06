@@ -44,6 +44,31 @@ blogsRouter.post('/', async (request, response) => {
   response.json(savedBlog.toJSON())
 })
 
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const body = request.body
+  // const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  // if (!request.token || !decodedToken.id) {
+  //   return response.status(401).json({ error: 'token missing or invalid' })
+  // }
+  // const user = await User.findById(decodedToken.id)
+
+  if (!body.comment) {
+    return response.status(400).json({
+      error: 'missing comment'
+    })
+  }
+
+  const blog = await Blog.findById(request.params.id)
+
+  blog.comments = blog.comments.concat(body.comment)
+
+  const updatedBlog = await Blog
+    .findByIdAndUpdate(request.params.id, blog, { new: true })
+    .populate('user', { username: 1, name: 1 })
+
+  response.json(updatedBlog.toJSON())
+})
+
 blogsRouter.put('/:id', (request, response, next) => {
   const body = request.body
 
@@ -51,7 +76,8 @@ blogsRouter.put('/:id', (request, response, next) => {
     likes: body.likes
   }
 
-  Blog.findByIdAndUpdate(request.params.id, blog, { new: true }).populate('user', { username: 1, name: 1 })
+  Blog
+    .findByIdAndUpdate(request.params.id, blog, { new: true }).populate('user', { username: 1, name: 1 })
     .then(updatedBlog => {
       response.json(updatedBlog.toJSON())
     })

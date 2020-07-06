@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useDispatch, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import {
   Switch,
   Route,
@@ -13,39 +13,46 @@ import BlogList from './components/BlogList'
 import UserList from './components/UserList'
 import Blog from './components/Blog'
 import User from './components/User'
-import storage from './utils/storage'
+import Navigation from './components/Navigation'
 
 import { initializeBlogs } from './reducers/blogReducer'
-import { logoutUser, setUser } from './reducers/userReducer'
 import { initializeUsers } from './reducers/usersReducer'
 
+import Container from '@material-ui/core/Container'
+import { Typography, CssBaseline, Paper } from '@material-ui/core'
+
+import { ThemeProvider } from '@material-ui/styles'
+import darkTheme from './theme'
 import './App.css'
 
 
-const App = (props) => {
-  const dispatch = useDispatch()
+const App = ({ initializeBlogs, initializeUsers, user }) => {
+
   useEffect(() => {
     // Initialize blogs
-    dispatch(initializeBlogs())
-    dispatch(initializeUsers())
-  }, [dispatch])
-
-  const handleLogout = async () => {
-    // Set user state to null
-    props.logoutUser()
-    // Remove user from local storage
-    storage.logoutUser()
-  }
+    initializeBlogs()
+    // Initialize users
+    initializeUsers()
+  }, [])
 
   return (
-    <div>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline/>
+      { user ?
+        <Navigation/>
+        : ''
+      }
       <Switch>
         <Route path="/login">
-          <div>
-            <h2>Login</h2>
-            <Notification/>
-            <LoginForm/>
-          </div>
+          <Container maxWidth="xs">
+            <Paper style={{ padding: '40px 20px', marginTop: 40, textAlign: 'center' }} >
+              <div>
+                <Typography variant="h4">Login</Typography>
+                <Notification/>
+                <LoginForm/>
+              </div>
+            </Paper>
+          </Container>
         </Route>
         <Route path="/blogs/:id">
           <Blog/>
@@ -57,21 +64,17 @@ const App = (props) => {
           <UserList/>
         </Route>
         <Route path="/">
-          {props.user ?
-            <div>
+          {user ?
+            <Container>
               <h2>Blogs</h2>
               <Notification/>
-              <div>
-                <p>{props.user.name} logged in</p>
-                <button onClick={handleLogout}>logout</button>
-              </div>
               <BlogForm/>
               <BlogList/>
-            </div>
+            </Container>
             : <Redirect to="/login"/>}
         </Route>
       </Switch>
-    </div>
+    </ThemeProvider>
   )
 }
 
@@ -83,8 +86,8 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = {
-  logoutUser,
-  setUser
+  initializeBlogs,
+  initializeUsers
 }
 
 const ConnectedApp = connect(
