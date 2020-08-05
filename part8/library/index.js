@@ -1,4 +1,5 @@
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, gql, UserInputError } = require('apollo-server')
+const { v1: uuid } = require('uuid')
 
 let authors = [
   {
@@ -70,7 +71,7 @@ let books = [
     genres: ['classic', 'crime']
   },
   {
-    title: 'The Demon ',
+    title: 'The Demon',
     published: 1872,
     author: 'Fyodor Dostoevsky',
     id: "afa5de04-344d-11e9-a414-719c6709cf3e",
@@ -86,18 +87,84 @@ const typeDefs = gql`
     id: ID!
     genres: [String!]!
   }
+  type Author {
+    name: String!
+    born: Int
+    id: ID!
+    bookCount: Int!
+  }
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks: [Book!]!
+    allBooks(author: String, genre: String): [Book!]!
+    allAuthors: [Author!]!
+  }
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]!
+    ) : Book
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ) : Author
   }
 `
 
 const resolvers = {
-  Query: {
+  Query: {   
     bookCount: () => books.length,
     authorCount: () => authors.length,
-    allBooks: () => books,
+    allBooks: (root, args) => {
+      const byAuthor = (book) => 
+        book.author === args.author ? book : !book
+      const byGenre = (book) => 
+        book.genres.some(genre => genre === args.genre) ? book : !book
+      if (args.author && args.genre) {
+        return books.filter(byAuthor).filter(byGenre)
+      } else if (args.author) {
+        return books.filter(byAuthor)
+      } else if (args.genre) {
+        return books.filter(byGenre)
+      } else {
+        return books
+      }
+    },
+    allAuthors: () => authors
+  },
+  Author: {
+    bookCount: (root) => {
+      const authoredBooks = books.filter(book => book.author === root.name ? book : !book)
+      return authoredBooks.length
+    }
+  },
+  Mutation: {
+    addBook: (root, args) => {
+      if (books.find(b => b.title === args.title)) {
+        throw new UserInputError('Name must be unique', {
+          invalidArgs: args.title,
+        })
+      }
+      if (!authors.find(a => a.name === args.author)) {
+        console.log('Author not found, creating author')
+        const author = { name: args.author, id: uuid() }
+        authors = authors.concat(author)
+      }
+      const book = { ...args, id: uuid() }
+      books = books.concat(book)
+      return book
+    },
+    editAuthor: (root, args) => {
+      const author = authors.find(a => a.name === args.name)
+      if (!author) {
+        return null
+      }
+      const updatedAuthor = { ...author, born: args.setBornTo}
+      authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
+      return updatedAuthor
+    }
   }
 }
 
