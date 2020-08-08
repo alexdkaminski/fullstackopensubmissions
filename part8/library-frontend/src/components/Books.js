@@ -6,14 +6,12 @@ const Books = (props) => {
   const result = useQuery(ALL_BOOKS)
   const [books, setBooks] = useState([])
   const [filteredBooks, setFilteredBooks] = useState([])
-  const [genre, setGenre] = useState(null)
   const [genres, setGenres] = useState([])
 
   useEffect(() => {
     if (result.data) {
       setBooks(result.data.allBooks)
       setFilteredBooks(result.data.allBooks)
-      console.log(result.data.allBooks)
       const genreReducer = (genres, book) => {
         const newGenres = book.genres.filter((g) => g && !genres.includes(g))
         return genres.concat(newGenres)
@@ -24,7 +22,6 @@ const Books = (props) => {
   }, [result])
 
   const changeGenre = (genre) => {
-    setGenre(genre)
     if (genre === "all") {
       setFilteredBooks(books)
     } else {

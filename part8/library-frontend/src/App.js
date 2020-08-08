@@ -10,6 +10,7 @@ import Recommendations from './components/Recommendations.js'
 const App = () => {
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(localStorage.getItem('library-user-token'))
+  const [favouriteGenre, setFavouriteGenre] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const client = useApolloClient()
 
@@ -56,11 +57,13 @@ const App = () => {
       <Recommendations
         show={page === 'recommendations'}
         token={token}
+        setFavouriteGenre={setFavouriteGenre}
       />
 
       <NewBook
         show={page === 'add'}
         setError={notify}
+        favouriteGenre={favouriteGenre}
       />
 
       <LoginForm
