@@ -78,4 +78,17 @@ const BOOKS_BY_GENRE = gql`
   }
 `
 
-export { ALL_BOOKS, ALL_AUTHORS, ADD_BOOK, EDIT_AUTHOR, LOGIN, FAVOURITE_GENRE, BOOKS_BY_GENRE }
+const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      title
+      author {
+        name
+      }
+      published
+      genres
+    }
+  }
+`
+
+export { ALL_BOOKS, ALL_AUTHORS, ADD_BOOK, EDIT_AUTHOR, LOGIN, FAVOURITE_GENRE, BOOKS_BY_GENRE, BOOK_ADDED }

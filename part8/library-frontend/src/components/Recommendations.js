@@ -9,9 +9,7 @@ const Recommendations = (props) => {
   const [filteredBooks, setFilteredBooks] = useState([])
 
   useEffect(() => {
-      console.log(genre)
       if (genre.data) {
-        console.log(genre.data.me.favouriteGenre)
         props.setFavouriteGenre(genre.data.me.favouriteGenre)
         getBooks({ variables: { genre: genre.data.me.favouriteGenre }})
     }
@@ -19,7 +17,6 @@ const Recommendations = (props) => {
 
   useEffect(() => {
     if (booksResult.data) {
-      console.log(booksResult.data.allBooks)
       setFilteredBooks(booksResult.data.allBooks)
     }
   }, [booksResult])
