@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/patients HTTP/1.1
+content-type: application/json
+
+{ 
+  "name": "John Gill",
+  "dateOfBirth": "1950-01-01",
+  "ssn": "123456-12A",
+  "gender": "male",
+  "occupationg": "Timber man"
+}
