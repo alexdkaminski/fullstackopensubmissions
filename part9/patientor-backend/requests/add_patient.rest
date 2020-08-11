@@ -6,5 +6,5 @@ content-type: application/json
   "dateOfBirth": "1950-01-01",
   "ssn": "123456-12A",
   "gender": "male",
-  "occupationg": "Timber man"
+  "occupation": "Timber man"
 }
