@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Container, Icon } from "semantic-ui-react";
 import { apiBaseUrl } from "../constants";
 import axios from "axios";
-import { MatchParams, Entry, Diagnosis } from "../types";
+import { MatchParams, Entry } from "../types";
 import { useStateValue, updatePatient } from "../state";
 
 const genderIcons = {
@@ -14,6 +14,7 @@ const genderIcons = {
 
 const PatientPage: React.FC = () => {
   const [{ patients }, dispatch] = useStateValue();
+  const [{ diagnoses }] = useStateValue();
   const { id } = useParams<MatchParams>();
 
   const patient = { ...patients[id] };
@@ -25,7 +26,7 @@ const PatientPage: React.FC = () => {
         dispatch(updatePatient(patient));
         console.log('fetching patient details');
       } catch (error) {
-        console.error(error.response.data);
+        console.error(error);
       }
     };
     if (!patient.ssn) fetchPatient();
@@ -54,7 +55,7 @@ const PatientPage: React.FC = () => {
             :
               <ul>
                 {entry.diagnosisCodes?.map((diagnosisCode: any) => (
-                  <li key={diagnosisCode}>{diagnosisCode}</li>
+                  <li key={diagnosisCode}>{diagnosisCode} {diagnoses[diagnosisCode]?.name}</li>
                 ))}
               </ul>
             }
