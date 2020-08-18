@@ -25,6 +25,11 @@ const App: React.FC = () => {
         console.error(e);
       }
     };
+    fetchPatientList();
+  }, [dispatch]);
+
+  React.useEffect(() => {
+    axios.get<void>(`${apiBaseUrl}/ping`);
     const fetchDiagnosesList = async () => {
       try {
         const { data: diagnosesListFromApi } = await axios.get<Diagnosis[]>(
@@ -35,7 +40,6 @@ const App: React.FC = () => {
         console.error(e);
       }
     };
-    fetchPatientList();
     fetchDiagnosesList();
   }, [dispatch]);
 

@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import { useParams } from 'react-router-dom';
-import { Container, Icon } from "semantic-ui-react";
+import { Container, Icon, Card, Button } from "semantic-ui-react";
 import { apiBaseUrl } from "../constants";
 import axios from "axios";
-import { MatchParams, Entry } from "../types";
-import { useStateValue, updatePatient } from "../state";
+import { MatchParams, NewEntry, EntryType, Patient } from "../types";
+import { useStateValue, updatePatient, } from "../state";
+import EntryDetails from './EntryDetails';
+import AddEntryModal from "../AddEntryModal";
 
 const genderIcons = {
   male: "mars" as "mars",
@@ -12,10 +14,13 @@ const genderIcons = {
   other: "genderless" as "genderless",
 };
 
-const PatientPage: React.FC = () => {
+const PatientPage: React.FC = () => {        
   const [{ patients }, dispatch] = useStateValue();
-  const [{ diagnoses }] = useStateValue();
   const { id } = useParams<MatchParams>();
+
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
+  const openModal = (): void => setModalOpen(true);
 
   const patient = { ...patients[id] };
 
@@ -32,6 +37,42 @@ const PatientPage: React.FC = () => {
     if (!patient.ssn) fetchPatient();
   }, [dispatch]);
 
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
+  if (!patient) return null;
+
+  const submitNewEntry = async (values: NewEntry) => {
+    const body = { ...values };
+
+    if (body.type === EntryType.OccupationalHealthcare) {
+      if (!body.sickLeave?.endDate && !body.sickLeave?.startDate) {
+        body.sickLeave = undefined;
+      }
+    }
+
+    try {
+      const { data: returnedPatient } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${patient.id}/entries`,
+        body
+      );
+      dispatch(updatePatient(returnedPatient));
+      closeModal();
+    } catch (e) {
+      console.error(e.response?.data);
+
+      let errorMessage = "Oops! Something went wrong!";
+
+      if (e.response?.status >= 400 && e.response?.status < 500) {
+        errorMessage = e.response.data.error;
+      }
+
+      setError(errorMessage);
+    }
+  };
+
   return (
     <div className="App">
       <Container>
@@ -43,25 +84,22 @@ const PatientPage: React.FC = () => {
         <p>
           <strong>Occupation:</strong> {patient.occupation}
         </p>
-        <h4>Entries</h4>
-        {!patient.entries
-        ? null
-        :
-        patient.entries.map((entry: Entry) => (
-          <div key={entry.id}>
-            <p>{entry.date} {entry.description}</p>
-            {!entry.diagnosisCodes
-            ? null
-            :
-              <ul>
-                {entry.diagnosisCodes?.map((diagnosisCode: any) => (
-                  <li key={diagnosisCode}>{diagnosisCode} {diagnoses[diagnosisCode]?.name}</li>
-                ))}
-              </ul>
-            }
-          </div>
-        ))
-        }
+
+        <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        error={error}
+        onClose={closeModal}
+        />
+        <Button onClick={openModal}>Add New Entry</Button>
+
+        {patient.entries.length > 0 && <h2>Entries</h2>}
+        
+        <Card.Group>
+        {patient.entries.map((entry) => (
+          <EntryDetails key={entry.id} entry={entry} />
+        ))}
+        </Card.Group>
       </Container>
     </div>
   );
