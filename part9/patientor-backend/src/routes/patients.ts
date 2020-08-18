@@ -3,7 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
 import patientService from '../services/patientService';
-import toNewPatient from '../utils';
+import { toNewPatient, toNewEntry } from '../utils';
+
 
 const router = express.Router();
 
@@ -27,6 +28,22 @@ router.post('/', (req, res) => {
     res.json(addedPatient);
   } catch (e) {
     res.status(400).send(e.message);
+  }
+});
+
+router.post("/:id/entries", (req, res) => {
+  const patient = patientService.findById(req.params.id);
+
+  if (patient) {
+    try {
+      const newEntry = toNewEntry(req.body);
+      const updatedPatient = patientService.addEntry(patient, newEntry);
+      res.json(updatedPatient);
+    } catch (e) {
+      res.status(400).send({ error: e.message });
+    }
+  } else {
+    res.status(404).send({ error: "Sorry, this patient does not exist" });
   }
 });
 

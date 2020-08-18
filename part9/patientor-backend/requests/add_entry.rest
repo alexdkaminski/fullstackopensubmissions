@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries HTTP/1.1
+content-type: application/json
+
+{ 
+  "type": "HealthCheck",
+  "healthCheckRating": 0,
+  "date": "2020-01-01", 
+  "specialist": "MD House",
+  "description": "He memed too hard"
+}
